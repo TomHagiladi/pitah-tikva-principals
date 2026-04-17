@@ -3,13 +3,11 @@ summarize.py — runs on the facilitator's laptop during the workshop.
 
 מאזין לבקשות סיכום ב-/summaryRequest ב-Firebase RTDB. כשתום לוחץ על
 "צור סיכום משובים" בדשבורד הבקרה (הפרטי), בקשה חדשה נכתבת ל-DB.
-הסקריפט קורא את /feedback, שולח ל-Claude, וכותב את התוצאה ל-/summary.
+הסקריפט קורא את /feedback, שולח ל-Gemini, וכותב את התוצאה ל-/summary.
 הדשבורד (גם הפרטי וגם הציבורי) מאזין ל-/summary ומציג את הסיכום אוטומטית.
 
 הפעלה:
-    # וודא ש-ANTHROPIC_API_KEY מוגדר ב-env:
-    #   PowerShell:  $env:ANTHROPIC_API_KEY = "sk-ant-..."
-    #   bash:        export ANTHROPIC_API_KEY=sk-ant-...
+    # וודא ש-GEMINI_API_KEY מוגדר ב-env (מותקן אצל תום כ-Windows env variable).
     python summarize.py
 
 השאר את הסקריפט רץ בטרמינל לאורך הסדנה. Ctrl+C לעצירה.
@@ -18,10 +16,11 @@ import os
 import sys
 import time
 import requests
-from anthropic import Anthropic
+from google import genai
+from google.genai import types
 
 DB_URL = "https://pitah-tikva-principals-default-rtdb.europe-west1.firebasedatabase.app"
-MODEL = "claude-sonnet-4-6"
+MODEL = "gemini-2.5-flash"
 POLL_SECONDS = 3
 
 SYSTEM_PROMPT = """אתה/את מסכם/ת משובי משתתפים בסדנת מנהלי בתי ספר בישראל, שעסקה בהתחדשות אחרי תקופה קשה, ובמציאת רגעי השראה בעבודה החינוכית.
@@ -59,29 +58,26 @@ def build_feedback_text(feedback_dict):
 
 
 def generate_summary(feedback_text):
-    client = Anthropic()
-    msg = client.messages.create(
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    response = client.models.generate_content(
         model=MODEL,
-        max_tokens=1024,
-        system=SYSTEM_PROMPT,
-        messages=[
-            {
-                "role": "user",
-                "content": f"להלן המשובים:\n\n{feedback_text}\n\nסכם/י בעברית.",
-            }
-        ],
+        contents=f"להלן המשובים:\n\n{feedback_text}\n\nסכם/י בעברית.",
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+            max_output_tokens=1024,
+        ),
     )
-    return msg.content[0].text.strip()
+    return (response.text or "").strip()
 
 
 def main():
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        print("חסר ANTHROPIC_API_KEY במשתני הסביבה. הגדר אותו ונסה שוב.")
+    if not os.environ.get("GEMINI_API_KEY"):
+        print("חסר GEMINI_API_KEY במשתני הסביבה. הגדר אותו ונסה שוב.", flush=True)
         sys.exit(1)
 
-    print(f"מחובר ל-{DB_URL}")
-    print(f"מודל: {MODEL}")
-    print(f"בודק כל {POLL_SECONDS} שניות. Ctrl+C לעצירה.\n")
+    print(f"מחובר ל-{DB_URL}", flush=True)
+    print(f"מודל: {MODEL}", flush=True)
+    print(f"בודק כל {POLL_SECONDS} שניות. Ctrl+C לעצירה.\n", flush=True)
 
     # בדוק מצב נוכחי כדי לא לסכם על בקשה ישנה ברגע ההפעלה
     last_seen = None
@@ -90,9 +86,9 @@ def main():
         if current and isinstance(current, dict):
             last_seen = current.get("requestedAt")
             if last_seen:
-                print(f"  (בקשה קיימת שנוצרה קודם timestamp={last_seen} — מתעלם ממנה)")
+                print(f"  (בקשה קיימת שנוצרה קודם timestamp={last_seen} — מתעלם ממנה)", flush=True)
     except Exception as e:
-        print(f"אזהרה: בעיה בקריאה ראשונית: {e}")
+        print(f"אזהרה: בעיה בקריאה ראשונית: {e}", flush=True)
 
     while True:
         try:
@@ -101,14 +97,14 @@ def main():
                 requested_at = req.get("requestedAt")
                 if requested_at and requested_at != last_seen:
                     last_seen = requested_at
-                    print(f"\nבקשה חדשה התקבלה (timestamp={requested_at})")
+                    print(f"\nבקשה חדשה התקבלה (timestamp={requested_at})", flush=True)
                     feedback = fetch("feedback") or {}
                     if not feedback:
-                        print("  אין משובים — רושם שגיאה")
+                        print("  אין משובים — רושם שגיאה", flush=True)
                         put("summary", {"status": "error", "error": "אין עדיין משובים"})
                     else:
                         text = build_feedback_text(feedback)
-                        print(f"  נמצאו {len(feedback)} משובים, שולח ל-Claude...")
+                        print(f"  נמצאו {len(feedback)} משובים, שולח ל-Gemini...", flush=True)
                         put("summary", {"status": "generating"})
                         try:
                             summary = generate_summary(text)
@@ -121,17 +117,17 @@ def main():
                                     "feedbackCount": len(feedback),
                                 },
                             )
-                            print(f"  סיכום נכתב ({len(summary)} תווים):")
-                            print(f"--- סיכום ---\n{summary}\n---")
+                            print(f"  סיכום נכתב ({len(summary)} תווים):", flush=True)
+                            print(f"--- סיכום ---\n{summary}\n---", flush=True)
                         except Exception as e:
-                            print(f"  שגיאת Claude: {e}")
+                            print(f"  שגיאת Gemini: {e}", flush=True)
                             put("summary", {"status": "error", "error": str(e)[:200]})
             time.sleep(POLL_SECONDS)
         except KeyboardInterrupt:
-            print("\nעצירה.")
+            print("\nעצירה.", flush=True)
             break
         except Exception as e:
-            print(f"אזהרה: {e} — מנסה שוב בעוד {POLL_SECONDS} שניות")
+            print(f"אזהרה: {e} — מנסה שוב בעוד {POLL_SECONDS} שניות", flush=True)
             time.sleep(POLL_SECONDS)
 
 
