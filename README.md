@@ -1,59 +1,61 @@
-# מטעינים מחדש — אפליקציית סדנת מנהלים
+# Vibe Coding — אפליקציית סדנת מנהלי פתח תקווה
 
-אפליקציית Web חד-פעמית לסדנת מנהלי בתי ספר בפסגה פתח תקווה (26.4.2026).
+אפליקציית Web חד-פעמית לסדנה של תום הגלעדי עם מנהלי בתי ספר בפתח תקווה, **26.4.2026**.
+נבנתה בעצמה כהדגמה של Vibe Coding — המשתתפים חווים אותה כמשתמשי קצה, ואז נחשפים לאיך נבנתה.
 
-## הפעלה מהירה
+**Live:** https://tomhagiladi.github.io/pitah-tikva-principals/
 
-### במחשב (פיתוח)
-```
-לחיצה כפולה על index.html
-```
-או:
-```bash
-cd "C:\Users\tomha\claude code\workshops\pitah-tikva-principals"
-start index.html
-```
+## URL-ים לסדנה
 
-### מסך מנחה (Admin Dashboard)
-```
-index.html?dashboard=true&key=<המפתח-הסודי>
-```
-המפתח הסודי מוגדר בתוך `index.html` (חפש `ADMIN_KEY`).
+- **משתתף:** `https://tomhagiladi.github.io/pitah-tikva-principals/` — זה הלינק שנשלח בוואטסאפ
+- **דשבורד מנחה (ניהול):** `...?dashboard=true&key=pesga2026` — אצל תום בטלפון/מחשב
+- **דשבורד מנחה (תצוגה):** `...?dashboard=true&key=pesga2026&view=display` — להקרנה על המסך הגדול
 
-### באונליין (ביום הסדנה)
-```
-https://tomhagiladi.github.io/pitah-tikva-principals
-```
-שלח את הלינק הזה במדבקת וואטסאפ למנהלים.
+כפתור בפינה של הדשבורד מחליף בין שתי התצוגות בלי לפתוח חלון חדש.
 
-## צעד חד-פעמי: הקמת Firebase
+## מה צריך לרוץ בזמן הסדנה
 
-1. היכנס ל-[console.firebase.google.com](https://console.firebase.google.com)
-2. לחץ "Add project" → שם: `pitah-tikva-principals`
-3. הפעל **Realtime Database** (Region: europe-west1, מצב Test)
-4. הפעל **Storage** (מצב Test)
-5. העתק את ה-Firebase Config מהגדרות הפרויקט → הדבק ב-`index.html` בסוף (שורה עם `FIREBASE_CONFIG = {...}`)
+1. **הטלפונים של המשתתפים** פותחים את הלינק — זהו, שום התקנה
+2. **המחשב של תום** על המסך הגדול — Display URL
+3. **הטלפון/חלון נוסף של תום** — Control URL (כפתור "חלוקה לקבוצות" וכו')
+4. **`summarize.py` בטרמינל** על הלפטופ של תום. דורש `GEMINI_API_KEY` ב-env:
+   ```bash
+   python summarize.py
+   ```
+   כשתום לוחץ "צור סיכום" — הסקריפט מקבל, שולח ל-Gemini, ומחזיר סיכום שמופיע בדשבורד התצוגה.
 
-אחרי הסדנה אפשר למחוק את הפרויקט מ-Firebase (שומר על עלויות = 0).
+## מסכי המשתתף (8 בסך הכל)
+
+`welcome → waiting → group → poem → battery → discussion → upload → feedback → done`
+
+**מה מסונכרן ברמת הקבוצה** (לחיצה אחת מקדמת את כל חברי הקבוצה):
+- group → poem ("מצאנו ואנחנו מוכנים")
+- poem → battery ("קראנו, ממשיכים")
+- discussion → upload ("סיימנו, ממשיכים לשלב הבא")
+
+**מה אישי:**
+- מסך הסוללה, ההעלאה, המשוב, והסיום. כל אחד בקצב שלו.
+- אם חבר/ת קבוצה כבר העלה/תה תמונה — הכפתור "המשיכו לשלב הבא" מופיע לשאר, בלי חובה להעלות משלהם.
 
 ## בדיקה לפני הסדנה
 
-1. פתח 4 חלונות incognito → רשום 4 שמות שונים
-2. פתח חלון חמישי עם `?dashboard=true&key=...` → לחץ "חלוקת קבוצות"
-3. וידוא שכל 4 החלונות עוברים למסך 2 עם השמות הנכונים
-4. עבור דרך 6 המסכים
-5. העלה תמונה → וידוא שהיא מופיעה בקולאז' בדשבורד
+סקריפט בדיקה אידיאלי:
+1. נקה את Firebase (curl DELETE על ה-DB root, או "אתחול הסדנה" בדשבורד)
+2. פתח 4 חלונות `?fresh=1` + דשבורד + `summarize.py` בטרמינל
+3. רשום 4 שמות שונים → לחץ "חלוקה לקבוצות"
+4. עבור דרך כל המסכים כולל הטיימר המסונכרן
+5. העלה תמונה → ודא שמישהו אחר רואה את כפתור "המשיכו"
+6. כתוב משובים → לחץ "צור סיכום" → ודא שסיכום Gemini מופיע ב-Display
+7. בדוק גם מהטלפון (iOS + Android) — במיוחד כפתור המצלמה
 
 ## מבנה
 
-- `index.html` — כל האפליקציה (HTML + CSS + JS)
-- `assets/battery.png` — איור הסוללה
-- `CLAUDE.md` — תיעוד לסוכני AI עתידיים
+- `index.html` — כל האפליקציה (HTML + CSS + JS inline, אין build)
+- `assets/battery-{drained,energetic,pondering}.png` — דמויות הסוללה (Imagen 4)
+- `summarize.py` + `requirements.txt` — pipeline הסיכום של Gemini
+- `CLAUDE.md` — תיעוד ארכיטקטורה מלא לעתיד
 
-## מצב נוכחי של תכנים
+## אחרי 26.4.2026
 
-- ✅ מבנה 6 המסכים
-- ✅ אלגוריתם חלוקת קבוצות
-- ✅ Firebase integration
-- ⏳ טקסט השיר "לובשת שגרה" (בית פתיחה + קרדיט; טקסט מלא ממתין לירדנה/יעל)
-- ✅ מד סוללה מקורי (Gemini)
+- אפשר למחוק את פרויקט Firebase (`pitah-tikva-principals` ב-console.firebase.google.com)
+- אפשר לארכב את הריפו ב-GitHub
