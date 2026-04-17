@@ -1,0 +1,2569 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#c17b7b">
+  <title>מטעינים מחדש — סדנת מנהלים</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Heebo:wght@400;500;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-cream: #faf4ed;
+      --bg-cream-dark: #f3ead9;
+      --primary: #c17b7b;
+      --primary-dark: #a5665f;
+      --secondary: #8fa888;
+      --secondary-dark: #6e8a6a;
+      --accent: #d9b26f;
+      --text-dark: #3d2f2a;
+      --text-medium: #6b5a52;
+      --text-light: #9c8a80;
+      --surface: #ffffff;
+      --surface-shadow: rgba(61, 47, 42, 0.08);
+      --surface-shadow-strong: rgba(61, 47, 42, 0.15);
+      --radius-sm: 10px;
+      --radius-md: 18px;
+      --radius-lg: 28px;
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      overscroll-behavior: none;
+    }
+
+    body {
+      font-family: 'Rubik', 'Heebo', sans-serif;
+      background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-cream-dark) 100%);
+      color: var(--text-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* ===== Layout ===== */
+    #app {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      padding-top: 12px;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+
+    /* ===== Persistent group header ===== */
+    .group-header {
+      display: none;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto 14px;
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      box-shadow: 0 2px 10px var(--surface-shadow);
+      align-items: center;
+      gap: 12px;
+      font-size: 0.88rem;
+    }
+
+    .group-header.visible {
+      display: flex;
+    }
+
+    .group-header .gh-badge {
+      background: linear-gradient(135deg, var(--accent) 0%, #c19b5a 100%);
+      color: var(--text-dark);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .group-header .gh-members {
+      color: var(--text-medium);
+      line-height: 1.4;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .group-header .gh-members .me {
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 20px 0;
+      animation: fadeIn var(--transition);
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Typography ===== */
+    h1, h2, h3 {
+      font-family: 'Rubik', sans-serif;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text-dark);
+    }
+
+    h1 {
+      font-size: clamp(1.6rem, 5vw, 2.1rem);
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: clamp(1.3rem, 4vw, 1.6rem);
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: var(--text-medium);
+      font-size: 1.05rem;
+      margin-bottom: 14px;
+    }
+
+    .lead {
+      font-size: 1.15rem;
+      color: var(--text-dark);
+    }
+
+    .hint {
+      font-size: 0.92rem;
+      color: var(--text-light);
+    }
+
+    /* ===== Cards ===== */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 32px 26px;
+      width: 100%;
+      box-shadow: 0 8px 32px var(--surface-shadow), 0 2px 8px var(--surface-shadow);
+      text-align: center;
+    }
+
+    .card-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .icon-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 6px 20px rgba(193, 123, 123, 0.35);
+    }
+
+    .icon-circle.sage {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+      box-shadow: 0 6px 20px rgba(143, 168, 136, 0.35);
+    }
+
+    .icon-circle.gold {
+      background: linear-gradient(135deg, var(--accent) 0%, #c19b5a 100%);
+      box-shadow: 0 6px 20px rgba(217, 178, 111, 0.35);
+    }
+
+    /* ===== Buttons ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 54px;
+      padding: 14px 28px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 4px 16px rgba(193, 123, 123, 0.35);
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(193, 123, 123, 0.45);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 2px 10px rgba(193, 123, 123, 0.35);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .btn.sage {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+      box-shadow: 0 4px 16px rgba(143, 168, 136, 0.35);
+    }
+
+    .btn.sage:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(143, 168, 136, 0.45);
+    }
+
+    .btn.secondary {
+      background: var(--surface);
+      color: var(--text-dark);
+      box-shadow: 0 2px 8px var(--surface-shadow);
+      border: 2px solid var(--bg-cream-dark);
+    }
+
+    .btn.secondary:hover:not(:disabled) {
+      box-shadow: 0 4px 12px var(--surface-shadow-strong);
+    }
+
+    /* ===== Forms ===== */
+    .input-group {
+      width: 100%;
+      margin: 16px 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-dark);
+      text-align: start;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      min-height: 54px;
+      padding: 14px 18px;
+      border: 2px solid var(--bg-cream-dark);
+      border-radius: var(--radius-md);
+      background: var(--bg-cream);
+      color: var(--text-dark);
+      font-family: inherit;
+      font-size: 1.1rem;
+      transition: border-color var(--transition), background var(--transition);
+      text-align: start;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--surface);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-light);
+    }
+
+    /* ===== Spinner ===== */
+    .spinner {
+      width: 54px;
+      height: 54px;
+      border: 5px solid var(--bg-cream-dark);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ===== Group members list ===== */
+    .member-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 20px 0;
+      width: 100%;
+    }
+
+    .member-list li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg-cream);
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      font-size: 1.05rem;
+      animation: slideIn 0.4s ease backwards;
+    }
+
+    .member-list li:nth-child(1) { animation-delay: 0.05s; }
+    .member-list li:nth-child(2) { animation-delay: 0.15s; }
+    .member-list li:nth-child(3) { animation-delay: 0.25s; }
+    .member-list li:nth-child(4) { animation-delay: 0.35s; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .member-list .member-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .member-list .member-icon:nth-child(odd) { background: var(--secondary); }
+
+    .group-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--text-dark);
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    /* ===== Poem ===== */
+    .poem {
+      background: var(--bg-cream);
+      border-radius: var(--radius-md);
+      padding: 28px 24px;
+      margin: 20px 0;
+      font-family: 'Rubik', serif;
+      font-size: 1.1rem;
+      line-height: 1.9;
+      color: var(--text-dark);
+      text-align: center;
+      font-weight: 400;
+    }
+
+    .poem .stanza {
+      margin-bottom: 12px;
+    }
+
+    .poem .stanza:last-child {
+      margin-bottom: 0;
+    }
+
+    .credit {
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    .credit a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .credit a:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== Battery ===== */
+    .battery-visual {
+      position: relative;
+      width: 200px;
+      height: 100px;
+      margin: 20px auto;
+    }
+
+    .battery-body {
+      width: 100%;
+      height: 100%;
+      border: 5px solid var(--text-dark);
+      border-radius: 16px;
+      position: relative;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .battery-tip {
+      position: absolute;
+      top: 50%;
+      inset-inline-start: -14px;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 40%;
+      background: var(--text-dark);
+      border-radius: 3px;
+    }
+
+    .battery-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      inset-inline-end: 0;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 50%, var(--secondary) 100%);
+      width: 50%;
+      transition: width 0.3s ease, background 0.3s ease;
+      border-radius: 10px;
+    }
+
+    .battery-percent {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      z-index: 2;
+      text-shadow: 0 1px 3px rgba(255,255,255,0.9);
+    }
+
+    .slider-wrap {
+      width: 100%;
+      padding: 10px 0;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 14px;
+      background: linear-gradient(90deg, #d4a59a 0%, var(--accent) 50%, var(--secondary) 100%);
+      border-radius: 7px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid var(--primary);
+      box-shadow: 0 2px 8px var(--surface-shadow-strong);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid var(--primary);
+      box-shadow: 0 2px 8px var(--surface-shadow-strong);
+      cursor: pointer;
+    }
+
+    input[type="range"]:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 6px;
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--text-medium);
+    }
+
+    /* Battery character images flanking the slider */
+    .slider-with-chars {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 18px 0 8px;
+    }
+
+    .char-side {
+      flex-shrink: 0;
+      width: 90px;
+      margin: 0;
+      text-align: center;
+    }
+
+    .char-side .char-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+    }
+
+    .char-side figcaption {
+      margin-top: 6px;
+      font-size: 0.82rem;
+      color: var(--text-medium);
+      line-height: 1.25;
+    }
+
+    .slider-middle {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .slider-middle input[type="range"] {
+      width: 100%;
+      margin: 0;
+    }
+
+    @media (max-width: 380px) {
+      .char-side { width: 68px; }
+      .char-side figcaption { font-size: 0.75rem; }
+      .slider-with-chars { gap: 6px; }
+    }
+
+    /* Pondering battery — only on facilitator display dashboard */
+    .battery-pondering-img { display: none; }
+    body.dashboard-display .battery-pondering-img {
+      display: block;
+      width: min(260px, 70%);
+      height: auto;
+      margin: 0 auto 12px;
+      border-radius: 12px;
+    }
+
+    /* ===== Instructions boxes ===== */
+    .instructions-box {
+      width: 100%;
+      background: var(--bg-cream);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      margin: 10px 0;
+      text-align: start;
+    }
+
+    .instructions-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .instructions-box ul {
+      padding-inline-start: 8px;
+    }
+
+    .instructions-box li {
+      margin-bottom: 8px;
+    }
+
+    .instructions-box li:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ===== Timers ===== */
+    .timers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    .timer-box {
+      background: var(--bg-cream);
+      border-radius: var(--radius-md);
+      padding: 20px 14px;
+      text-align: center;
+    }
+
+    .timer-box.group-timer {
+      background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-cream-dark) 100%);
+    }
+
+    .timer-label {
+      font-size: 0.9rem;
+      color: var(--text-medium);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .timer-value {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .timer-value.warning {
+      color: var(--primary);
+      animation: pulse 1s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .timer-actions {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .btn.small {
+      min-height: 44px;
+      padding: 10px 18px;
+      font-size: 0.95rem;
+      margin-top: 8px;
+    }
+
+    /* ===== Upload ===== */
+    .upload-choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 400px) {
+      .upload-choices { grid-template-columns: 1fr; }
+    }
+
+    .btn-upload-choice {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 130px;
+      padding: 20px 14px;
+      border: 3px dashed var(--primary);
+      border-radius: var(--radius-lg);
+      background: var(--bg-cream);
+      color: var(--text-dark);
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition), border-color var(--transition);
+    }
+
+    .btn-upload-choice:hover,
+    .btn-upload-choice:focus-visible {
+      background: var(--bg-cream-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-upload-choice:active {
+      transform: translateY(0);
+    }
+
+    .btn-upload-choice.selected {
+      border-style: solid;
+      border-color: var(--secondary);
+      background: #fff;
+    }
+
+    .btn-upload-choice i {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    .btn-upload-choice small {
+      font-size: 0.82rem;
+      font-weight: 400;
+      color: var(--text-medium);
+    }
+
+    input.photo-input-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .upload-preview {
+      margin: 20px 0;
+    }
+
+    .upload-preview img {
+      max-width: 100%;
+      max-height: 280px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 6px 20px var(--surface-shadow-strong);
+    }
+
+    /* ===== Dashboard ===== */
+    .dashboard {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Control view (default) — admin + battery on row 1, collage spans row 2,
+       summary spans row 3. Display view rearranges via body class. */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr auto;
+      grid-template-areas:
+        "admin   battery"
+        "collage collage"
+        "summary summary";
+      gap: 24px;
+      min-height: calc(100vh - 48px);
+      min-height: calc(100dvh - 48px);
+    }
+
+    .admin-panel   { grid-area: admin; }
+    .battery-panel { grid-area: battery; }
+    .collage-panel { grid-area: collage; }
+    .summary-panel { grid-area: summary; }
+
+    /* Display view (projector) — hide admin; stack the three panels vertically
+       so each has its own clear frame: battery → photos → insights. */
+    body.dashboard-display .admin-panel { display: none; }
+    body.dashboard-display .dashboard-grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr auto;
+      grid-template-areas:
+        "battery"
+        "collage"
+        "summary";
+    }
+    body.dashboard-display .collage-panel { max-height: 62vh; overflow: hidden; }
+    body.dashboard-display .collage { max-height: calc(62vh - 100px); }
+    body.dashboard-display .battery-panel .battery-visual { width: 320px; height: 170px; }
+    body.dashboard-display .battery-panel .battery-percent { font-size: 3.4rem; }
+    body.dashboard-display .summary-panel h2 { font-size: 1.6rem; }
+    body.dashboard-display .summary-text { font-size: 1.25rem; line-height: 2; }
+
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-template-areas: "admin" "battery" "collage" "summary";
+        min-height: auto;
+      }
+      body.dashboard-display .dashboard-grid {
+        grid-template-rows: auto;
+        grid-template-areas: "battery" "collage" "summary";
+      }
+      body.dashboard-display .collage-panel { max-height: none; }
+      body.dashboard-display .collage { max-height: none; }
+    }
+
+    /* Floating toggle between control and display dashboard views */
+    .view-toggle-btn {
+      position: fixed;
+      top: 16px;
+      inset-inline-start: 16px;
+      z-index: 100;
+      background: var(--text-dark);
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(61, 47, 42, 0.25);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      transition: transform var(--transition), background var(--transition);
+    }
+    .view-toggle-btn:hover,
+    .view-toggle-btn:focus-visible {
+      transform: translateY(-2px);
+      background: var(--primary);
+      outline: none;
+    }
+    body.dashboard-display .view-toggle-btn {
+      opacity: 0.4;
+    }
+    body.dashboard-display .view-toggle-btn:hover {
+      opacity: 1;
+    }
+
+    /* Summary panel styles */
+    .summary-panel .summary-text {
+      font-size: 1.08rem;
+      line-height: 1.9;
+      color: var(--text-dark);
+      padding: 14px 8px;
+      white-space: pre-wrap;
+    }
+    .summary-panel .summary-meta {
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    .summary-panel .empty-state {
+      text-align: center;
+      padding: 36px 20px;
+      color: var(--text-medium);
+      font-size: 1rem;
+    }
+
+    .panel {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 6px 24px var(--surface-shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .admin-panel .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      background: var(--bg-cream);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-medium);
+      margin-top: 4px;
+    }
+
+    .group-preview {
+      background: var(--bg-cream);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 16px;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .group-preview h3 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .group-preview .group {
+      padding: 8px 12px;
+      margin-bottom: 6px;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+    }
+
+    .group-preview .group strong {
+      color: var(--primary);
+      display: inline-block;
+      margin-inline-end: 8px;
+    }
+
+    .battery-panel .battery-visual {
+      width: 260px;
+      height: 140px;
+      margin: 30px auto;
+    }
+
+    .battery-panel .battery-percent {
+      font-size: 2.8rem;
+    }
+
+    /* Collage — photo-album / scrapbook look.
+       Each photo is rotated slightly, with a white polaroid frame,
+       preserving its natural aspect ratio. */
+    .collage {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 24px 18px;
+      padding: 30px 24px;
+      max-height: 100%;
+      overflow-y: auto;
+      background: linear-gradient(135deg, #f7ede0 0%, #ede0ce 100%);
+      border-radius: var(--radius-md);
+    }
+
+    .collage .photo {
+      background: #fff;
+      padding: 10px 10px 28px 10px;
+      box-shadow:
+        0 10px 28px rgba(61, 47, 42, 0.18),
+        0 3px 8px rgba(61, 47, 42, 0.10);
+      transform: rotate(var(--angle, 0deg));
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  z-index 0s 0s;
+      animation: collageIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+      width: clamp(180px, 22vw, 260px);
+      position: relative;
+      cursor: zoom-in;
+    }
+
+    .collage .photo:hover,
+    .collage .photo:focus-within {
+      transform: rotate(0deg) scale(1.05);
+      box-shadow:
+        0 16px 40px rgba(61, 47, 42, 0.25),
+        0 6px 14px rgba(61, 47, 42, 0.15);
+      z-index: 10;
+    }
+
+    .collage .photo img {
+      display: block;
+      width: 100%;
+      height: auto;
+      /* Preserve original aspect ratio — no cropping */
+    }
+
+    .collage .photo .caption {
+      position: absolute;
+      bottom: 6px;
+      left: 10px;
+      right: 10px;
+      text-align: center;
+      font-family: 'Caveat', 'Rubik', cursive;
+      font-size: 0.95rem;
+      color: var(--text-medium);
+      font-style: italic;
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @keyframes collageIn {
+      from {
+        opacity: 0;
+        transform: rotate(var(--angle, 0deg)) translateY(30px) scale(0.85);
+      }
+      to {
+        opacity: 1;
+        transform: rotate(var(--angle, 0deg)) translateY(0) scale(1);
+      }
+    }
+
+    .collage .empty-state {
+      width: 100%;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+      font-size: 1rem;
+    }
+
+    /* Tape decoration on corners */
+    .collage .photo::before,
+    .collage .photo::after {
+      content: '';
+      position: absolute;
+      width: 44px;
+      height: 16px;
+      background: rgba(217, 178, 111, 0.45);
+      top: -6px;
+      box-shadow: 0 1px 3px rgba(61, 47, 42, 0.12);
+    }
+
+    .collage .photo::before {
+      left: 8px;
+      transform: rotate(-4deg);
+    }
+
+    .collage .photo::after {
+      right: 8px;
+      transform: rotate(4deg);
+    }
+
+    .panel-wide {
+      grid-column: 1 / -1;
+    }
+
+    /* ===== Toast ===== */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text-dark);
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 6px 20px var(--surface-shadow-strong);
+      font-size: 0.95rem;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition), transform var(--transition);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, -8px);
+    }
+
+    /* ===== Utility ===== */
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .warning-box {
+      background: #fff4e5;
+      border: 2px solid var(--accent);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin: 14px 0;
+      color: var(--text-dark);
+      font-size: 0.95rem;
+      text-align: start;
+    }
+
+    .debug-banner {
+      position: fixed;
+      top: 8px;
+      left: 8px;
+      background: var(--accent);
+      color: var(--text-dark);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
+      z-index: 999;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Persistent group header (visible after allocation, on participant screens) -->
+    <div class="group-header" id="group-header" role="banner" aria-label="פרטי הקבוצה שלי">
+      <span class="gh-badge" id="gh-badge">קבוצה —</span>
+      <div class="gh-members" id="gh-members"></div>
+    </div>
+
+    <!-- ===== Screen 1: Welcome ===== -->
+    <section id="screen-welcome" class="screen active" aria-label="הרשמה">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle" aria-hidden="true"><i class="fas fa-heart"></i></div>
+          <h1>מטעינים מחדש</h1>
+          <p class="lead">מרחב חיבור ומנהיגות</p>
+        </div>
+        <p>ברוכים הבאים לסדנה של פסגה פתח תקווה.<br>הפעילות תתנהל דרך הטלפון שלכם, בקבוצות קטנות.</p>
+        <form id="form-welcome">
+          <div class="input-group">
+            <label for="name-input">השם המלא שלך</label>
+            <input type="text" id="name-input" name="name" placeholder="לדוגמה: רונית כהן" autocomplete="name" required minlength="2">
+          </div>
+          <button type="submit" class="btn" id="btn-submit-name">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span>הצטרפות</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== Screen 2: Waiting ===== -->
+    <section id="screen-waiting" class="screen" aria-label="ממתין לחלוקת קבוצות">
+      <div class="card">
+        <div class="card-header">
+          <div class="spinner" aria-hidden="true"></div>
+          <h1>ממתינים לכולם</h1>
+          <p class="lead" id="waiting-name">שלום, <span></span></p>
+        </div>
+        <p>ברגע שכולם יירשמו, תום יחלק אתכם לקבוצות קטנות.</p>
+        <p class="hint">אפשר להתחיל להיכנס לאווירה 🌿</p>
+      </div>
+    </section>
+
+    <!-- ===== Screen 3: Group Display ===== -->
+    <section id="screen-group" class="screen" aria-label="הקבוצה שלך">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle sage" aria-hidden="true"><i class="fas fa-users"></i></div>
+          <span class="group-badge" id="group-name-badge">קבוצה</span>
+          <h1>הקבוצה שלך נוצרה!</h1>
+        </div>
+        <ul class="member-list" id="group-members-list" aria-label="חברי הקבוצה"></ul>
+        <p>מצאו זה את זו, קחו כיבוד, והתיישבו בפינה נעימה יחד.</p>
+        <button type="button" class="btn sage" id="btn-group-ready">
+          <i class="fas fa-check" aria-hidden="true"></i>
+          <span>מצאנו ואנחנו מוכנים</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== Screen 4: Poem ===== -->
+    <section id="screen-poem" class="screen" aria-label="השראת פתיחה">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle gold" aria-hidden="true"><i class="fas fa-feather-alt"></i></div>
+          <h1>רגע של השראה</h1>
+        </div>
+        <p>אנו מזמינים אחד/ת מכם להקריא בקול לקבוצה את השיר "לובשת שגרה" מאת טלי ורסנו-אייסמן.</p>
+
+        <div class="poem" id="poem-text">
+          <div class="stanza" style="font-size: 1.15rem; color: var(--text-dark); font-weight: 500; line-height: 2;">
+            מְנַסָּה לִלְבֹּשׁ שִׁגְרָה,<br>
+            הִיא רְחָבָה לִי בַּמָּתְנַיִם<br>
+            וְלוֹחֶצֶת בַּצַּוָּאר.<br>
+            אִי אֶפְשָׁר לְהַאֲשִׁימָהּ,<br>
+            הָרַי הָיְתָה מְקֻפֶּלֶת זְמַן רַב<br>
+            בָּאָרוֹן בֵּין דְּבָרִים אֲחֵרִים.<br>
+            וּבֵינְתַיִם, אֲנִי כְּבָר<br>
+            אַחֶרֶת..
+          </div>
+        </div>
+
+        <p class="credit" style="margin-top:18px;">
+          "לובשת שגרה" · טלי ורסנו-אייסמן · זוכה מקום שלישי בתחרות "אחרי המלחמה" 2022
+        </p>
+
+        <button type="button" class="btn" id="btn-poem-next">
+          <i class="fas fa-arrow-left" aria-hidden="true"></i>
+          <span>קראנו, ממשיכים</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== Screen 5: Battery (Energy) ===== -->
+    <section id="screen-battery" class="screen" aria-label="מד אנרגיה אישי">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle" aria-hidden="true"><i class="fas fa-battery-half"></i></div>
+          <h1>איך אני מגיעה/ מגיע לכאן?</h1>
+        </div>
+        <p>איך מרגישה הסוללה הרגשית שלך ברגע הזה?</p>
+
+        <div class="battery-visual" role="img" aria-label="איור סוללה">
+          <div class="battery-body">
+            <div class="battery-tip"></div>
+            <div class="battery-fill" id="battery-fill"></div>
+            <div class="battery-percent" id="battery-percent">50</div>
+          </div>
+        </div>
+
+        <div class="slider-with-chars">
+          <figure class="char-side">
+            <img src="assets/battery-drained.png" alt="דמות סוללה מותשת" class="char-img">
+            <figcaption>אני גמור/ה</figcaption>
+          </figure>
+          <div class="slider-middle">
+            <input type="range" id="battery-slider" min="0" max="100" value="50"
+                   aria-label="מדד האנרגיה שלי" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          </div>
+          <figure class="char-side">
+            <img src="assets/battery-energetic.png" alt="דמות סוללה מלאת אנרגיה" class="char-img">
+            <figcaption>אני מלא/ת אנרגיה</figcaption>
+          </figure>
+        </div>
+
+        <button type="button" class="btn" id="btn-battery-next">
+          <i class="fas fa-arrow-left" aria-hidden="true"></i>
+          <span>שמירה והמשך</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== Screen 6: Discussion + Timer ===== -->
+    <section id="screen-discussion" class="screen" aria-label="דיון מונחה בקבוצה">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle sage" aria-hidden="true"><i class="fas fa-comments"></i></div>
+          <h1>סבב שיתוף</h1>
+        </div>
+
+        <div class="instructions-box">
+          <p style="font-weight:600; color: var(--text-dark); margin-bottom:10px;">על מה לשתף?</p>
+          <p>נזכרים בתקופת המלחמה — ובוחרים רגע אחד לשתף: חוויית הצלחה, יוזמה שאתם גאים בה, או רגע מרגש שקרה בבית הספר שלכם באותה תקופה. אין צורך בסיפור ארוך — רגע אחד חי ואמיתי מספיק.</p>
+        </div>
+
+        <div class="instructions-box">
+          <p style="font-weight:600; color: var(--text-dark); margin-bottom:10px;">איך זה עובד?</p>
+          <ul style="margin-inline-start:20px; color: var(--text-medium); font-size:0.98rem; line-height:1.7;">
+            <li><strong>2:30 דקות</strong> לכל דובר/ת</li>
+            <li>הדובר/ת הבא/ה מתחיל/ה ברגע שלוחצים על הכפתור — <em>הטיימרים של כל חברי הקבוצה מסונכרנים</em>, אז רק מישהו/י אחד/ת בקבוצה צריך/ה ללחוץ</li>
+            <li>כשהזמן האישי נגמר — המונה הקבוצתי גם עוצר, עד שלוחצים "הדובר/ת הבא/ה"</li>
+            <li>אחרי שכולם שיתפו, הכפתור "הדובר/ת הבא/ה" ייסגר וניתן להמשיך לשלב הבא</li>
+          </ul>
+        </div>
+
+        <div class="timers" role="group" aria-label="טיימרים לסבב השיתוף">
+          <div class="timer-box">
+            <div class="timer-label">הדובר/ת <span id="speaker-index">—</span></div>
+            <div class="timer-value" id="timer-personal">2:30</div>
+          </div>
+          <div class="timer-box group-timer">
+            <div class="timer-label">זמן הקבוצה</div>
+            <div class="timer-value" id="timer-group">—</div>
+          </div>
+        </div>
+
+        <p class="hint" id="timer-status" style="min-height:1.5em; text-align:center;"></p>
+
+        <div class="timer-actions">
+          <button type="button" class="btn" id="btn-start-timer">
+            <i class="fas fa-play" aria-hidden="true"></i>
+            <span>התחלת הסבב</span>
+          </button>
+          <button type="button" class="btn sage" id="btn-next-speaker" style="display:none;">
+            <i class="fas fa-forward" aria-hidden="true"></i>
+            <span>הדובר/ת הבא/ה</span>
+          </button>
+          <button type="button" class="btn secondary small" id="btn-end-discussion">
+            <i class="fas fa-check" aria-hidden="true"></i>
+            <span>סיימנו, ממשיכים לשלב הבא</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Screen 7: Photo Upload ===== -->
+    <section id="screen-upload" class="screen" aria-label="העלאת תמונה">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle gold" aria-hidden="true"><i class="fas fa-camera"></i></div>
+          <h1>תמונה שעושה טוב על הלב</h1>
+        </div>
+        <p>שתפו תמונה שמזכירה לכם משהו שאתם אוהבים — אישית או קבוצתית. תמונה אחת לכל אחד/ת, או אחת משותפת לכל הקבוצה.</p>
+
+        <!-- Notice: appears for group members after any one person in the group uploaded -->
+        <div id="group-photo-notice" role="status" aria-live="polite"
+             style="display:none; background: var(--bg-cream); border: 2px solid var(--secondary); border-radius: var(--radius-md); padding: 16px; margin: 16px 0; text-align: center;">
+          <p style="font-weight: 600; color: var(--text-dark); margin-bottom: 10px;">
+            <i class="fas fa-check-circle" aria-hidden="true" style="color: var(--secondary);"></i>
+            כבר עלתה תמונה מהקבוצה שלכם
+          </p>
+          <p style="font-size: 0.92rem; color: var(--text-medium); margin-bottom: 14px;">אם בחרתם להעלות תמונה אחת משותפת — תוכלו להמשיך. אם אתם רוצים להעלות עוד אחת משלכם, אפשר גם זה.</p>
+          <button type="button" class="btn sage small" id="btn-skip-upload">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span>המשיכו לשלב הבא</span>
+          </button>
+        </div>
+
+        <p style="color: var(--text-medium); font-size: 0.95rem;">אפשר <strong>לצלם עכשיו</strong> משהו מסביבכם, או <strong>לבחור תמונה קיימת</strong> מהגלריה של הטלפון:</p>
+
+        <div class="upload-choices" role="group" aria-label="בחירת מקור התמונה">
+          <button type="button" class="btn-upload-choice" id="btn-take-photo" aria-describedby="take-photo-desc">
+            <i class="fas fa-camera" aria-hidden="true"></i>
+            <span>צילום במצלמה</span>
+            <small id="take-photo-desc">פותח את המצלמה</small>
+          </button>
+          <button type="button" class="btn-upload-choice" id="btn-choose-photo" aria-describedby="choose-photo-desc">
+            <i class="fas fa-images" aria-hidden="true"></i>
+            <span>בחירה מהגלריה</span>
+            <small id="choose-photo-desc">תמונה שכבר יש לכם</small>
+          </button>
+        </div>
+
+        <input type="file" id="photo-input-camera" class="photo-input-hidden" accept="image/*" capture="environment" aria-hidden="true" tabindex="-1">
+        <input type="file" id="photo-input-gallery" class="photo-input-hidden" accept="image/*" aria-hidden="true" tabindex="-1">
+
+        <div class="upload-preview" id="upload-preview" style="display:none;">
+          <img id="upload-preview-img" alt="תמונה שבחרת">
+        </div>
+
+        <button type="button" class="btn" id="btn-upload" disabled>
+          <i class="fas fa-upload" aria-hidden="true"></i>
+          <span>העלאה ושיתוף</span>
+        </button>
+        <p class="hint" id="upload-status"></p>
+      </div>
+    </section>
+
+    <!-- ===== Screen 7.5: Feedback ===== -->
+    <section id="screen-feedback" class="screen" aria-label="משוב חופשי">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle gold" aria-hidden="true"><i class="fas fa-comment-dots"></i></div>
+          <h1>רגע לפני שנפרדים</h1>
+        </div>
+        <p>בזמן שכולם מתאספים למליאה — מוזמנות ומוזמנים לכתוב כמה מילים על מה שעלה במפגש. חוויה, תובנה, הערה, כל דבר.</p>
+        <p style="color: var(--text-medium); font-size: 0.92rem;">ממש לא חובה — המשוב ייאסף לסיכום קבוצתי אנונימי. אם לא בא לך לכתוב, פשוט לדלג.</p>
+
+        <textarea id="feedback-text" rows="5" placeholder="מה עלה לך היום?" aria-label="טקסט משוב חופשי"
+                  style="width:100%; padding:14px; border:2px solid rgba(61,47,42,0.12); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; resize: vertical; min-height: 140px; background: var(--bg-cream); color: var(--text-dark); box-sizing: border-box; margin: 12px 0;"></textarea>
+
+        <button type="button" class="btn" id="btn-feedback-submit">
+          <i class="fas fa-paper-plane" aria-hidden="true"></i>
+          <span>שליחה</span>
+        </button>
+        <button type="button" class="btn secondary small" id="btn-feedback-skip">
+          <i class="fas fa-forward" aria-hidden="true"></i>
+          <span>דילוג</span>
+        </button>
+        <p class="hint" id="feedback-status" style="min-height:1.3em;"></p>
+      </div>
+    </section>
+
+    <!-- ===== Screen 8: Done ===== -->
+    <section id="screen-done" class="screen" aria-label="סיום">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle sage" aria-hidden="true"><i class="fas fa-hands-holding-circle"></i></div>
+          <h1>תודה!</h1>
+        </div>
+        <p class="lead">תודה רבה על השיתוף ❤️<br>אנחנו מזמינים אתכם ואתכן לחזור עכשיו למליאה —<br>נסתכל יחד על מה שיצרנו 🌿</p>
+      </div>
+    </section>
+
+    <!-- ===== Admin Dashboard ===== -->
+    <section id="screen-dashboard" class="screen" aria-label="מסך מנחה" style="max-width: none;">
+      <div class="dashboard" style="width:100%;">
+        <div class="dashboard-grid">
+
+          <!-- Admin panel -->
+          <div class="panel admin-panel">
+            <h2><i class="fas fa-cogs" aria-hidden="true" style="color:var(--primary);"></i> ניהול</h2>
+
+            <div class="stats">
+              <div class="stat">
+                <div class="stat-value" id="stat-count">0</div>
+                <div class="stat-label">משתתפים רשומים</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value" id="stat-groups">0</div>
+                <div class="stat-label">קבוצות</div>
+              </div>
+            </div>
+
+            <div class="group-preview" id="group-preview">
+              <h3>משתתפים ברשימה:</h3>
+              <div id="participants-list"></div>
+            </div>
+
+            <div id="allocation-preview" class="warning-box" style="display:none;"></div>
+
+            <button type="button" class="btn" id="btn-allocate">
+              <i class="fas fa-random" aria-hidden="true"></i>
+              <span>חלוקה לקבוצות</span>
+            </button>
+            <button type="button" class="btn sage small" id="btn-summarize" style="margin-top:8px;">
+              <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+              <span>צור סיכום משובים (Claude)</span>
+            </button>
+            <p class="hint" id="summary-status" style="margin-top:4px; min-height:1.3em;"></p>
+            <button type="button" class="btn secondary small" id="btn-reset" style="margin-top:8px;">
+              <i class="fas fa-rotate-left" aria-hidden="true"></i>
+              <span>אתחול הסדנה</span>
+            </button>
+          </div>
+
+          <!-- Battery panel -->
+          <div class="panel battery-panel">
+            <h2><i class="fas fa-battery-three-quarters" aria-hidden="true" style="color:var(--secondary-dark);"></i> מדד אנרגיה קבוצתי</h2>
+            <img class="battery-pondering-img" src="assets/battery-pondering.png" alt="דמות סוללה מהרהרת שואלת 'מה מצב הסוללה שלי'" aria-hidden="true">
+            <div class="battery-visual" role="img" aria-label="מד אנרגיה קבוצתי">
+              <div class="battery-body">
+                <div class="battery-tip"></div>
+                <div class="battery-fill" id="dashboard-battery-fill"></div>
+                <div class="battery-percent" id="dashboard-battery-percent">—</div>
+              </div>
+            </div>
+            <p class="hint" id="battery-stats" style="text-align:center;"></p>
+          </div>
+
+          <!-- Collage -->
+          <div class="panel panel-wide collage-panel">
+            <h2><i class="fas fa-images" aria-hidden="true" style="color:var(--accent);"></i> קיר השראה</h2>
+            <div class="collage" id="collage">
+              <div class="empty-state">התמונות יופיעו כאן ברגע שהמשתתפים יעלו אותן</div>
+            </div>
+          </div>
+
+          <!-- Summary (Claude-generated feedback summary) -->
+          <div class="panel panel-wide summary-panel">
+            <h2><i class="fas fa-scroll" aria-hidden="true" style="color:var(--primary);"></i> תובנות מהמשובים</h2>
+            <div class="summary-content">
+              <div class="empty-state" id="summary-empty">
+                ⏳ הסיכום יופיע כאן אחרי שהמנחה יפעיל אותו
+              </div>
+              <div class="summary-text" id="summary-text" style="display:none;"></div>
+              <div class="summary-meta" id="summary-meta" style="display:none;"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <button type="button" id="btn-view-toggle" class="view-toggle-btn" aria-label="החלפת תצוגה">
+    <i class="fas fa-display" aria-hidden="true"></i>
+    <span>עבור לתצוגה</span>
+  </button>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Firebase SDK (compat) - Database only, Storage replaced with base64-in-DB -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+  <script>
+    // ===== Config =====
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyBatFKyJc3a6CHTC1YXnm0r-Y-IECbj0dw",
+      authDomain: "pitah-tikva-principals.firebaseapp.com",
+      databaseURL: "https://pitah-tikva-principals-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "pitah-tikva-principals",
+      storageBucket: "pitah-tikva-principals.firebasestorage.app",
+      messagingSenderId: "83560123603",
+      appId: "1:83560123603:web:613c3cc429b3b87f831826"
+    };
+
+    const ADMIN_KEY = 'pesga2026'; // URL: ?dashboard=true&key=pesga2026
+    const DEBUG = new URLSearchParams(location.search).has('debug');
+
+    // ===== State =====
+    const state = {
+      userId: null,
+      name: null,
+      group: null,
+      energy: 50,
+      photoUrl: null,
+      allParticipants: {},
+      allGroups: {},
+    };
+
+    // ===== Utilities =====
+    function showToast(msg, ms = 2500) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), ms);
+    }
+
+    function uuid() {
+      return 'u-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(id);
+      if (target) target.classList.add('active');
+      // Show group header on post-allocation screens only (hide on welcome/waiting/dashboard/group)
+      const hideHeaderOn = ['screen-welcome', 'screen-waiting', 'screen-dashboard', 'screen-group'];
+      const header = document.getElementById('group-header');
+      if (header) {
+        if (state.group && !hideHeaderOn.includes(id)) {
+          header.classList.add('visible');
+        } else {
+          header.classList.remove('visible');
+        }
+      }
+      window.scrollTo(0, 0);
+    }
+
+    async function updateGroupHeader() {
+      if (!firebaseReady || !state.group) return;
+      const snap = await db.ref('groups/' + state.group).once('value');
+      const data = snap.val();
+      if (!data || !data.members) return;
+      document.getElementById('gh-badge').textContent = 'קבוצה ' + state.group;
+      const nameSnaps = await Promise.all(
+        data.members.map(uid => db.ref('participants/' + uid + '/name').once('value'))
+      );
+      const parts = data.members.map((uid, i) => {
+        const name = nameSnaps[i].val() || '...';
+        const isMe = uid === state.userId;
+        return isMe
+          ? `<span class="me">${escapeHtml(name)}</span>`
+          : escapeHtml(name);
+      });
+      document.getElementById('gh-members').innerHTML = parts.join(' · ');
+    }
+
+    // ===== Firebase init =====
+    let db = null, firebaseReady = false;
+
+    function initFirebase() {
+      if (!FIREBASE_CONFIG.apiKey) {
+        console.warn('Firebase config not set — running in preview mode');
+        return false;
+      }
+      try {
+        firebase.initializeApp(FIREBASE_CONFIG);
+        db = firebase.database();
+        firebaseReady = true;
+        return true;
+      } catch (e) {
+        console.error('Firebase init failed', e);
+        return false;
+      }
+    }
+
+    // ===== Participant flow =====
+
+    // Pick storage: ?fresh=1 → sessionStorage (per-tab, good for testing many users
+    // on one machine); default → localStorage (persists across refreshes, correct for
+    // real phones where each device has its own storage anyway)
+    const identityStorage = (new URLSearchParams(location.search)).has('fresh')
+      ? sessionStorage
+      : localStorage;
+
+    function loadIdentity() {
+      let id = identityStorage.getItem('pp-userId');
+      let name = identityStorage.getItem('pp-name');
+      if (!id) {
+        id = uuid();
+        identityStorage.setItem('pp-userId', id);
+      }
+      state.userId = id;
+      state.name = name;
+    }
+
+    function saveIdentity() {
+      identityStorage.setItem('pp-userId', state.userId);
+      identityStorage.setItem('pp-name', state.name);
+    }
+
+    function resetIdentity() {
+      identityStorage.removeItem('pp-userId');
+      identityStorage.removeItem('pp-name');
+      identityStorage.removeItem('pp-screen');
+    }
+
+    async function registerParticipant(name) {
+      state.name = name;
+      saveIdentity();
+      if (firebaseReady) {
+        await db.ref('participants/' + state.userId).set({
+          name: name,
+          joinedAt: firebase.database.ServerValue.TIMESTAMP,
+          group: null,
+          energy: null,
+          photoUrl: null,
+          currentScreen: 'waiting'
+        });
+        listenForGroup();
+      }
+      goToScreen('screen-waiting');
+    }
+
+    function goToScreen(id) {
+      identityStorage.setItem('pp-screen', id);
+      showScreen(id);
+      if (id === 'screen-waiting') {
+        document.querySelector('#waiting-name span').textContent = state.name || '';
+      }
+    }
+
+    // Listen for when admin allocates us to a group
+    function listenForGroup() {
+      if (!firebaseReady) return;
+      db.ref('participants/' + state.userId + '/group').on('value', snap => {
+        const group = snap.val();
+        if (!group) return;
+        const justAssigned = !state.group;
+        state.group = group;
+        updateGroupHeader();
+        listenToGroupScreen(); // attach sync listener now that we know the group
+        listenForGroupPhoto(); // notice when someone else in the group uploads
+        if (justAssigned) {
+          // First-time allocation: move from waiting → group
+          const current = identityStorage.getItem('pp-screen');
+          if (current === 'screen-waiting') {
+            renderGroupMembers();
+            goToScreen('screen-group');
+          }
+        }
+      });
+    }
+
+    // ===== Group-level screen sync =====
+    // When one member clicks "ready / read / done" on a synced screen, everyone in
+    // the group advances together. Source of truth: /groups/{id}/currentScreen.
+    // Sync only moves FORWARD in screen order — never back, never skipping
+    // individual-only screens (battery / upload / feedback) unless the group
+    // already moved past them.
+    const SCREEN_ORDER = [
+      'screen-welcome', 'screen-waiting', 'screen-group', 'screen-poem',
+      'screen-battery', 'screen-discussion', 'screen-upload',
+      'screen-feedback', 'screen-done'
+    ];
+    let groupScreenUnsub = null;
+
+    function listenToGroupScreen() {
+      if (!firebaseReady || !state.group || groupScreenUnsub) return;
+      const ref = db.ref('groups/' + state.group + '/currentScreen');
+      const handler = snap => {
+        const target = snap.val();
+        if (!target) return;
+        const current = identityStorage.getItem('pp-screen');
+        if (current === target) return;
+        const cIdx = SCREEN_ORDER.indexOf(current);
+        const tIdx = SCREEN_ORDER.indexOf(target);
+        if (cIdx < 0 || tIdx <= cIdx) return; // refuse to go backward or to unknown screens
+        if (current === 'screen-discussion') stopListeningToGroupTimer();
+        goToScreen(target);
+      };
+      ref.on('value', handler);
+      groupScreenUnsub = () => ref.off('value', handler);
+    }
+
+    function syncGroupScreen(target) {
+      if (firebaseReady && state.group) {
+        db.ref('groups/' + state.group + '/currentScreen').set(target);
+      }
+    }
+
+    async function renderGroupMembers() {
+      if (!firebaseReady || !state.group) return;
+      const snap = await db.ref('groups/' + state.group).once('value');
+      const data = snap.val();
+      if (!data || !data.members) return;
+      const badge = document.getElementById('group-name-badge');
+      badge.textContent = 'קבוצה ' + state.group;
+      const ul = document.getElementById('group-members-list');
+      ul.innerHTML = '';
+
+      // Fetch each member's name directly from Firebase (participant view doesn't
+      // keep a global participants object — that's only in dashboard mode)
+      const nameSnaps = await Promise.all(
+        data.members.map(uid => db.ref('participants/' + uid + '/name').once('value'))
+      );
+
+      data.members.forEach((uid, i) => {
+        const name = nameSnaps[i].val() || '...';
+        const isMe = uid === state.userId;
+        const li = document.createElement('li');
+        const initial = (name || '?').charAt(0);
+        const meTag = isMe ? ' <small style="color:var(--text-light); font-weight:400;">(את/ה)</small>' : '';
+        li.innerHTML = `<span class="member-icon" aria-hidden="true">${escapeHtml(initial)}</span><span>${escapeHtml(name)}${meTag}</span>`;
+        ul.appendChild(li);
+      });
+    }
+
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    // ===== Screen handlers =====
+
+    // Screen 1: welcome
+    document.getElementById('form-welcome').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name-input').value.trim();
+      if (name.length < 2) return;
+      const btn = document.getElementById('btn-submit-name');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'רגע...';
+      try {
+        await registerParticipant(name);
+      } catch (err) {
+        console.error(err);
+        showToast('תקלה ברישום, נסו שוב');
+        btn.disabled = false;
+        btn.querySelector('span').textContent = 'הצטרפות';
+      }
+    });
+
+    // Screen 3: group ready — group-synced (one click advances whole group)
+    document.getElementById('btn-group-ready').addEventListener('click', () => {
+      if (firebaseReady && state.userId) {
+        db.ref('participants/' + state.userId + '/readyAt').set(firebase.database.ServerValue.TIMESTAMP);
+      }
+      goToScreen('screen-poem');
+      syncGroupScreen('screen-poem');
+    });
+
+    // Screen 4: poem next — group-synced
+    document.getElementById('btn-poem-next').addEventListener('click', () => {
+      goToScreen('screen-battery');
+      syncGroupScreen('screen-battery');
+    });
+
+    // Screen 5: battery slider
+    const batterySlider = document.getElementById('battery-slider');
+    const batteryFill = document.getElementById('battery-fill');
+    const batteryPercent = document.getElementById('battery-percent');
+
+    function updateBatteryVisual(val) {
+      batteryFill.style.width = val + '%';
+      batteryPercent.textContent = val;
+      batterySlider.setAttribute('aria-valuenow', val);
+      if (val < 30) batteryFill.style.background = 'linear-gradient(90deg, #c17b7b 0%, #d4a59a 100%)';
+      else if (val < 70) batteryFill.style.background = 'linear-gradient(90deg, #d4a59a 0%, #d9b26f 100%)';
+      else batteryFill.style.background = 'linear-gradient(90deg, #d9b26f 0%, var(--secondary) 100%)';
+    }
+
+    batterySlider.addEventListener('input', (e) => {
+      state.energy = parseInt(e.target.value, 10);
+      updateBatteryVisual(state.energy);
+    });
+
+    document.getElementById('btn-battery-next').addEventListener('click', async () => {
+      if (firebaseReady && state.userId) {
+        await db.ref('participants/' + state.userId + '/energy').set(state.energy);
+      }
+      goToScreen('screen-discussion');
+      listenToGroupTimer();
+    });
+
+    // ===== Screen 6: Synchronized Group Timer =====
+    // Shared state lives in /groups/{groupId}/timer. Every member subscribes and
+    // rebases their local display from the shared state + server-time sync.
+    //
+    // state: 'idle' | 'running' | 'paused' | 'ended'
+    // speakerIndex: 0-based index of current speaker (0 .. groupSize-1)
+    // speakerCount: number of "next speaker" transitions that have happened
+    //   (starts at 1 after first "start"; when it reaches groupSize, the button
+    //    auto-disables because everyone spoke).
+    // When running: personalEndsAt, groupEndsAt hold absolute ms timestamps
+    // When paused/ended: personalRemainingMs, groupRemainingMs hold durations
+    const PERSONAL_MS = 150000;  // 2:30
+
+    let serverTimeOffset = 0;
+    let groupTimerTick = null;
+    let groupTimerRef = null;
+    let groupTimerData = null;  // last snapshot we saw
+    let groupTimerUnsub = null;
+
+    function serverNow() { return Date.now() + serverTimeOffset; }
+
+    function groupTotalMs(size) {
+      // 2:30 × N speakers, rounded up (7:30 for 3, 10:00 for 4)
+      return PERSONAL_MS * size;
+    }
+
+    function formatTime(ms) {
+      const sec = Math.max(0, Math.round(ms / 1000));
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m}:${String(s).padStart(2, '0')}`;
+    }
+
+    function beep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = 660;
+        o.connect(g);
+        g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.0001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + 0.05);
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+        o.start();
+        o.stop(ctx.currentTime + 0.5);
+      } catch (e) {}
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    }
+
+    function getGroupSize() {
+      if (!state.group || !state.allGroupsLocal) return 4;
+      const g = state.allGroupsLocal[state.group];
+      if (!g || !g.members) return 4;
+      return g.members.length;
+    }
+
+    // Listen to /.info/serverTimeOffset once so our clocks match Firebase
+    function initServerTimeSync() {
+      if (!firebaseReady) return;
+      db.ref('.info/serverTimeOffset').on('value', snap => {
+        serverTimeOffset = snap.val() || 0;
+      });
+    }
+
+    // Start listening to the group timer state (called when we enter discussion screen)
+    async function listenToGroupTimer() {
+      if (!firebaseReady || !state.group) return;
+      // Cache group members for size lookup
+      if (!state.allGroupsLocal) state.allGroupsLocal = {};
+      const gSnap = await db.ref('groups/' + state.group).once('value');
+      state.allGroupsLocal[state.group] = gSnap.val() || {};
+
+      if (groupTimerUnsub) groupTimerUnsub();
+      groupTimerRef = db.ref('groups/' + state.group + '/timer');
+      const handler = snap => {
+        groupTimerData = snap.val();
+        renderTimerUI();
+      };
+      groupTimerRef.on('value', handler);
+      groupTimerUnsub = () => groupTimerRef.off('value', handler);
+
+      // Local tick updates the display every 500ms while running
+      if (groupTimerTick) clearInterval(groupTimerTick);
+      groupTimerTick = setInterval(renderTimerUI, 500);
+    }
+
+    function stopListeningToGroupTimer() {
+      if (groupTimerUnsub) { groupTimerUnsub(); groupTimerUnsub = null; }
+      if (groupTimerTick) { clearInterval(groupTimerTick); groupTimerTick = null; }
+      groupTimerData = null;
+    }
+
+    // Compute current personal + group remaining ms from the shared state
+    function computeTimes(t) {
+      if (!t) return { personal: PERSONAL_MS, group: 0, done: 0 };
+      const size = getGroupSize();
+      if (t.state === 'running') {
+        const now = serverNow();
+        return {
+          personal: Math.max(0, (t.personalEndsAt || 0) - now),
+          group: Math.max(0, (t.groupEndsAt || 0) - now),
+          done: t.state === 'ended'
+        };
+      }
+      return {
+        personal: Math.max(0, t.personalRemainingMs != null ? t.personalRemainingMs : PERSONAL_MS),
+        group: Math.max(0, t.groupRemainingMs != null ? t.groupRemainingMs : 0)
+      };
+    }
+
+    // Render the timer UI from the current shared state
+    function renderTimerUI() {
+      const t = groupTimerData;
+      const size = getGroupSize();
+      const personalEl = document.getElementById('timer-personal');
+      const groupEl = document.getElementById('timer-group');
+      const speakerIdxEl = document.getElementById('speaker-index');
+      const btnStart = document.getElementById('btn-start-timer');
+      const btnNext = document.getElementById('btn-next-speaker');
+      const status = document.getElementById('timer-status');
+
+      // Compute remaining times
+      const times = computeTimes(t);
+      personalEl.textContent = formatTime(times.personal);
+      groupEl.textContent = formatTime(t && t.state !== 'idle' ? times.group : groupTotalMs(size));
+
+      // Warning states
+      personalEl.classList.toggle('warning', t && t.state === 'running' && times.personal <= 30000);
+      groupEl.classList.toggle('warning', t && t.state === 'running' && times.group <= 60000);
+
+      // Speaker index display
+      if (t && t.speakerIndex != null) {
+        speakerIdxEl.textContent = `${t.speakerIndex + 1} מתוך ${size}`;
+      } else {
+        speakerIdxEl.textContent = '—';
+      }
+
+      // Button visibility & status message
+      const count = t && t.speakerCount != null ? t.speakerCount : 0;
+      const allSpoke = count >= size; // every speaker has at least started
+      const isLastSpeaker = count === size && t && t.state === 'running';
+
+      if (!t || t.state === 'idle') {
+        btnStart.style.display = 'inline-flex';
+        btnNext.style.display = 'none';
+        btnNext.disabled = false;
+        status.textContent = '';
+      } else if (allSpoke && t.state !== 'running') {
+        // Everyone finished speaking (and not currently in the last turn)
+        btnStart.style.display = 'none';
+        btnNext.style.display = 'inline-flex';
+        btnNext.disabled = true;
+        status.innerHTML = '✅ כולם שיתפו. אפשר להמשיך לשלב הבא.';
+      } else if (isLastSpeaker) {
+        btnStart.style.display = 'none';
+        btnNext.style.display = 'inline-flex';
+        btnNext.disabled = true;
+        status.innerHTML = '🎤 הדובר/ת האחרון/ה. כשהזמן ייגמר נוכל להמשיך.';
+      } else if (t.state === 'paused') {
+        btnStart.style.display = 'none';
+        btnNext.style.display = 'inline-flex';
+        btnNext.disabled = false;
+        status.innerHTML = `⏸️ הזמן האישי של דובר/ת ${t.speakerIndex + 1} הסתיים. לחצו <strong>"הדובר/ת הבא/ה"</strong> כדי להמשיך.`;
+      } else {
+        btnStart.style.display = 'none';
+        btnNext.style.display = 'inline-flex';
+        btnNext.disabled = false;
+        status.textContent = '';
+      }
+
+      // Auto-pause transition: personal hit 0 while running
+      if (t && t.state === 'running' && times.personal <= 0) {
+        // Race-safe via transaction: only one client succeeds in transitioning
+        groupTimerRef.transaction(cur => {
+          if (cur && cur.state === 'running' && (cur.personalEndsAt || 0) <= serverNow()) {
+            beep();
+            return {
+              ...cur,
+              state: 'paused',
+              personalRemainingMs: 0,
+              groupRemainingMs: Math.max(0, (cur.groupEndsAt || 0) - serverNow())
+            };
+          }
+          return; // abort
+        });
+      }
+    }
+
+    // ===== Timer button handlers =====
+    document.getElementById('btn-start-timer').addEventListener('click', async () => {
+      if (!firebaseReady || !state.group) return;
+      const size = getGroupSize();
+      const now = serverNow();
+      await groupTimerRef.transaction(cur => {
+        if (cur && cur.state && cur.state !== 'idle') return; // abort — already running
+        return {
+          state: 'running',
+          speakerIndex: 0,
+          speakerCount: 1,
+          personalEndsAt: now + PERSONAL_MS,
+          groupEndsAt: now + groupTotalMs(size),
+        };
+      });
+    });
+
+    document.getElementById('btn-next-speaker').addEventListener('click', async () => {
+      if (!firebaseReady || !state.group) return;
+      const size = getGroupSize();
+      await groupTimerRef.transaction(cur => {
+        if (!cur) return;
+        const count = (cur.speakerCount || 1);
+        if (count >= size) return; // everyone already spoke — abort
+        const now = serverNow();
+        // Preserve remaining group time across speakers
+        let groupRemainingMs;
+        if (cur.state === 'running') {
+          groupRemainingMs = Math.max(0, (cur.groupEndsAt || 0) - now);
+        } else {
+          groupRemainingMs = Math.max(0, cur.groupRemainingMs || 0);
+        }
+        const newCount = count + 1;
+        return {
+          state: 'running',
+          speakerIndex: (cur.speakerIndex || 0) + 1,
+          speakerCount: newCount,
+          personalEndsAt: now + PERSONAL_MS,
+          groupEndsAt: now + groupRemainingMs,
+        };
+      });
+    });
+
+    // End discussion — group-synced (one click moves everyone to upload)
+    document.getElementById('btn-end-discussion').addEventListener('click', () => {
+      stopListeningToGroupTimer();
+      goToScreen('screen-upload');
+      syncGroupScreen('screen-upload');
+    });
+
+    // Screen 7: photo upload — two sources (camera via capture=environment, gallery without)
+    // so iOS Safari + Android Chrome route us to the right picker on each phone.
+    const photoInputCamera = document.getElementById('photo-input-camera');
+    const photoInputGallery = document.getElementById('photo-input-gallery');
+    const btnTakePhoto = document.getElementById('btn-take-photo');
+    const btnChoosePhoto = document.getElementById('btn-choose-photo');
+    const uploadPreview = document.getElementById('upload-preview');
+    const uploadPreviewImg = document.getElementById('upload-preview-img');
+    const btnUpload = document.getElementById('btn-upload');
+    const uploadStatus = document.getElementById('upload-status');
+
+    btnTakePhoto.addEventListener('click', () => photoInputCamera.click());
+    btnChoosePhoto.addEventListener('click', () => photoInputGallery.click());
+
+    // Resize + compress to a base64 data URL. Aggressive defaults so we fit comfortably
+    // in Realtime DB: ~40 participants × ~250KB = ~10MB total.
+    async function resizeImageToDataURL(file, maxDim = 800, quality = 0.7) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            const ratio = Math.min(maxDim / width, maxDim / height);
+            width = Math.round(width * ratio);
+            height = Math.round(height * ratio);
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          URL.revokeObjectURL(img.src);
+          resolve(dataUrl);
+        };
+        img.onerror = reject;
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    let selectedPhotoDataUrl = null;
+
+    async function handlePhotoSelection(e, sourceBtn) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      try {
+        selectedPhotoDataUrl = await resizeImageToDataURL(file);
+        uploadPreviewImg.src = selectedPhotoDataUrl;
+        uploadPreview.style.display = 'block';
+        btnUpload.disabled = false;
+        const sizeKb = Math.round(selectedPhotoDataUrl.length / 1024);
+        uploadStatus.textContent = `תמונה מוכנה (${sizeKb}KB)`;
+        // Visual hint: highlight which source was used
+        [btnTakePhoto, btnChoosePhoto].forEach(b => b.classList.remove('selected'));
+        if (sourceBtn) sourceBtn.classList.add('selected');
+      } catch (err) {
+        console.error(err);
+        showToast('תקלה בקריאת התמונה');
+      }
+    }
+
+    photoInputCamera.addEventListener('change', e => handlePhotoSelection(e, btnTakePhoto));
+    photoInputGallery.addEventListener('change', e => handlePhotoSelection(e, btnChoosePhoto));
+
+    // Skip button: lets non-uploading group members continue once a group photo exists
+    document.getElementById('btn-skip-upload').addEventListener('click', () => {
+      goToScreen('screen-feedback');
+    });
+
+    // Listen for any group photo. Shows the "skip" notice when at least one other
+    // member of my group has uploaded. Safe to attach once at boot — the notice
+    // element is inside screen-upload so it's only visible on that screen anyway.
+    let groupPhotoUnsub = null;
+    function listenForGroupPhoto() {
+      if (!firebaseReady || !state.group || groupPhotoUnsub) return;
+      const noticeEl = document.getElementById('group-photo-notice');
+      const ref = db.ref('photos');
+      const handler = snap => {
+        const all = snap.val() || {};
+        const someoneElse = Object.entries(all).some(([uid, p]) =>
+          p && p.group === state.group && uid !== state.userId
+        );
+        noticeEl.style.display = someoneElse ? 'block' : 'none';
+      };
+      ref.on('value', handler);
+      groupPhotoUnsub = () => ref.off('value', handler);
+    }
+
+    btnUpload.addEventListener('click', async () => {
+      if (!selectedPhotoDataUrl) return;
+      btnUpload.disabled = true;
+      uploadStatus.textContent = 'מעלה...';
+      try {
+        if (firebaseReady) {
+          // Store the photo itself under /photos/ (separate from participants)
+          // so the participants listener stays small and fast.
+          await db.ref('photos/' + state.userId).set({
+            data: selectedPhotoDataUrl,
+            group: state.group || 'no-group',
+            name: state.name,
+            uploadedAt: firebase.database.ServerValue.TIMESTAMP
+          });
+          // Flag on the participant so dashboard knows it's done
+          await db.ref('participants/' + state.userId + '/hasPhoto').set(true);
+          state.photoUrl = selectedPhotoDataUrl;
+        }
+        uploadStatus.textContent = 'תודה, התמונה הועלתה 🌿';
+        setTimeout(() => goToScreen('screen-feedback'), 1200);
+      } catch (err) {
+        console.error(err);
+        showToast('שגיאה בהעלאה — נסו שוב');
+        uploadStatus.textContent = '';
+        btnUpload.disabled = false;
+      }
+    });
+
+    // ===== Screen 7.5: Feedback =====
+    document.getElementById('btn-feedback-submit').addEventListener('click', async () => {
+      const text = document.getElementById('feedback-text').value.trim();
+      const statusEl = document.getElementById('feedback-status');
+      if (!text) {
+        // Empty submit acts as skip
+        goToScreen('screen-done');
+        return;
+      }
+      const btn = document.getElementById('btn-feedback-submit');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'שולח...';
+      try {
+        if (firebaseReady && state.userId) {
+          await db.ref('feedback/' + state.userId).set({
+            text: text,
+            name: state.name || null,
+            group: state.group || null,
+            submittedAt: firebase.database.ServerValue.TIMESTAMP
+          });
+        }
+        goToScreen('screen-done');
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'תקלה בשמירה, נסו שוב או דלגו';
+        btn.disabled = false;
+        btn.querySelector('span').textContent = 'שליחה';
+      }
+    });
+
+    document.getElementById('btn-feedback-skip').addEventListener('click', () => {
+      goToScreen('screen-done');
+    });
+
+    // ===== Admin Dashboard =====
+    function isDashboardMode() {
+      const p = new URLSearchParams(location.search);
+      return p.get('dashboard') === 'true' && p.get('key') === ADMIN_KEY;
+    }
+
+    function getDashboardView() {
+      return new URLSearchParams(location.search).get('view') === 'display' ? 'display' : 'control';
+    }
+
+    function updateDashboardTitle() {
+      document.title = document.body.classList.contains('dashboard-display')
+        ? 'תצוגה — מטעינים מחדש'
+        : 'לוח מנחה — מטעינים מחדש';
+    }
+
+    // Toggle button lets Tom switch between Control (management) and Display
+    // (projector) views in-place — URL updates so you can bookmark / keep either
+    // as the tab's permanent mode, but no reload is needed.
+    function setupViewToggle() {
+      const btn = document.getElementById('btn-view-toggle');
+      if (!btn) return;
+      btn.style.display = 'flex';
+
+      const refreshBtn = () => {
+        const isDisplay = document.body.classList.contains('dashboard-display');
+        btn.querySelector('span').textContent = isDisplay ? 'חזרה לניהול' : 'עבור לתצוגה';
+        btn.querySelector('i').className = isDisplay ? 'fas fa-gears' : 'fas fa-display';
+        btn.setAttribute('aria-label', isDisplay ? 'חזרה לתצוגת ניהול' : 'מעבר לתצוגה ציבורית');
+      };
+      refreshBtn();
+
+      btn.addEventListener('click', () => {
+        const nowDisplay = document.body.classList.toggle('dashboard-display');
+        const url = new URL(location.href);
+        if (nowDisplay) url.searchParams.set('view', 'display');
+        else url.searchParams.delete('view');
+        history.replaceState(null, '', url);
+        updateDashboardTitle();
+        refreshBtn();
+      });
+    }
+
+    // Render summary panel from /summary RTDB node (shared state produced by
+    // summarize.py running on the facilitator's laptop).
+    function renderSummary(data) {
+      const emptyEl = document.getElementById('summary-empty');
+      const textEl = document.getElementById('summary-text');
+      const metaEl = document.getElementById('summary-meta');
+      const statusEl = document.getElementById('summary-status');
+      if (!emptyEl) return;
+      if (!data) {
+        emptyEl.textContent = '⏳ הסיכום יופיע כאן אחרי שהמנחה יפעיל אותו';
+        emptyEl.style.display = 'block';
+        textEl.style.display = 'none';
+        metaEl.style.display = 'none';
+        if (statusEl) statusEl.textContent = '';
+        return;
+      }
+      if (data.status === 'pending') {
+        emptyEl.textContent = '⏳ ממתין לסקריפט הסיכום... (ודא ש-summarize.py רץ בטרמינל)';
+        emptyEl.style.display = 'block';
+        textEl.style.display = 'none';
+        metaEl.style.display = 'none';
+        if (statusEl) statusEl.textContent = 'בקשה נשלחה, ממתין לסקריפט';
+        return;
+      }
+      if (data.status === 'generating') {
+        emptyEl.textContent = '⚙️ יוצר סיכום... (כ-30 שניות)';
+        emptyEl.style.display = 'block';
+        textEl.style.display = 'none';
+        metaEl.style.display = 'none';
+        if (statusEl) statusEl.textContent = 'בתהליך יצירה...';
+        return;
+      }
+      if (data.status === 'ready' && data.text) {
+        emptyEl.style.display = 'none';
+        textEl.textContent = data.text;
+        textEl.style.display = 'block';
+        if (data.generatedAt) {
+          const d = new Date(data.generatedAt);
+          metaEl.textContent = 'נוצר ב-' + d.toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'});
+          metaEl.style.display = 'block';
+        }
+        if (statusEl) statusEl.textContent = '✅ הסיכום מוכן';
+        return;
+      }
+      if (data.status === 'error') {
+        emptyEl.textContent = '❌ שגיאה: ' + (data.error || 'לא ידוע');
+        emptyEl.style.display = 'block';
+        textEl.style.display = 'none';
+        if (statusEl) statusEl.textContent = 'שגיאה — בדוק טרמינל Python';
+      }
+    }
+
+    function listenForSummary() {
+      if (!firebaseReady) return;
+      db.ref('summary').on('value', snap => renderSummary(snap.val()));
+    }
+
+    // Control-view only: write a summary request. The Python script on the
+    // facilitator's laptop polls /summaryRequest, sees a new timestamp, fetches
+    // /feedback, calls Claude, and writes /summary. Dashboard listeners
+    // (on both control and display views) pick up the result automatically.
+    async function triggerSummarize() {
+      if (!firebaseReady) return;
+      const fbSnap = await db.ref('feedback').once('value');
+      const all = fbSnap.val() || {};
+      const count = Object.keys(all).length;
+      if (count === 0) {
+        return showToast('אין עדיין משובים לסכם');
+      }
+      if (!confirm(`לסכם ${count} משובים עם Claude? ודא שסקריפט summarize.py רץ בטרמינל.`)) return;
+      // Write pending state immediately so both dashboards show a visible waiting
+      // indicator — otherwise the user clicks and nothing appears to happen.
+      await db.ref('summary').set({ status: 'pending', feedbackCount: count });
+      await db.ref('summaryRequest').set({
+        requestedAt: firebase.database.ServerValue.TIMESTAMP,
+        requestedBy: 'admin'
+      });
+      showToast('בקשה נשלחה. הסיכום ייווצר תוך ~30 שניות (אם summarize.py רץ).');
+    }
+
+    function listenAllParticipants() {
+      if (!firebaseReady) return;
+      db.ref('participants').on('value', snap => {
+        state.allParticipants = snap.val() || {};
+        renderDashboard();
+      });
+      db.ref('groups').on('value', snap => {
+        state.allGroups = snap.val() || {};
+        renderDashboard();
+      });
+      // Photos: stream individually via child_added so each new upload is a small delta
+      // (instead of transferring the whole photos object every time).
+      state.allPhotos = state.allPhotos || {};
+      db.ref('photos').on('child_added', snap => {
+        state.allPhotos[snap.key] = snap.val();
+        renderCollage();
+      });
+      db.ref('photos').on('child_changed', snap => {
+        state.allPhotos[snap.key] = snap.val();
+        renderCollage();
+      });
+      db.ref('photos').on('child_removed', snap => {
+        delete state.allPhotos[snap.key];
+        renderCollage();
+      });
+    }
+
+    function renderDashboard() {
+      // Stats
+      const participants = Object.entries(state.allParticipants);
+      document.getElementById('stat-count').textContent = participants.length;
+      document.getElementById('stat-groups').textContent = Object.keys(state.allGroups).length;
+
+      // Participants list
+      const list = document.getElementById('participants-list');
+      list.innerHTML = '';
+      participants.forEach(([uid, p]) => {
+        const div = document.createElement('div');
+        div.className = 'group';
+        const groupBadge = p.group ? `<strong>${escapeHtml(p.group)}</strong>` : '';
+        const energy = (p.energy != null) ? ` · ${p.energy}%` : '';
+        div.innerHTML = `${groupBadge}${escapeHtml(p.name)}${energy}`;
+        list.appendChild(div);
+      });
+
+      // Allocation preview
+      const count = participants.filter(([_, p]) => !p.group).length;
+      const preview = computeGroupsPreview(count);
+      const prevEl = document.getElementById('allocation-preview');
+      if (preview.impossible) {
+        prevEl.style.display = 'block';
+        prevEl.innerHTML = `⚠️ אי אפשר לחלק ${count} משתתפים לקבוצות של 3 או 4 בלבד. צריך 3, 4, 6, 7, 8, 9, 10, 11, 12... (לא 1, 2, 5).`;
+      } else if (count > 0) {
+        prevEl.style.display = 'block';
+        const desc = preview.fours > 0 && preview.threes > 0
+          ? `${preview.fours} קבוצות של 4 + ${preview.threes} קבוצות של 3`
+          : preview.fours > 0 ? `${preview.fours} קבוצות של 4`
+          : `${preview.threes} קבוצות של 3`;
+        prevEl.innerHTML = `ℹ️ ${count} ממתינים לחלוקה → ${desc}`;
+      } else {
+        prevEl.style.display = 'none';
+      }
+
+      // Battery average
+      const energies = participants.map(([_, p]) => p.energy).filter(e => e != null);
+      const avg = energies.length ? Math.round(energies.reduce((a,b) => a+b, 0) / energies.length) : null;
+      const fill = document.getElementById('dashboard-battery-fill');
+      const percent = document.getElementById('dashboard-battery-percent');
+      if (avg != null) {
+        fill.style.width = avg + '%';
+        percent.textContent = avg;
+        document.getElementById('battery-stats').textContent = `${energies.length} מתוך ${participants.length} הזינו מדד`;
+      } else {
+        fill.style.width = '0%';
+        percent.textContent = '—';
+        document.getElementById('battery-stats').textContent = 'ממתינים להזנת מדדים';
+      }
+
+      renderCollage();
+    }
+
+    // Stable pseudo-random angle per photo so layout doesn't reshuffle on every render
+    function angleFromKey(key) {
+      let h = 0;
+      for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0;
+      const range = 7; // +/- 7 degrees
+      return ((Math.abs(h) % (range * 200)) / 100 - range).toFixed(2) + 'deg';
+    }
+
+    function renderCollage() {
+      const collage = document.getElementById('collage');
+      if (!collage) return;
+      const photos = Object.entries(state.allPhotos || {});
+      if (photos.length === 0) {
+        collage.innerHTML = '<div class="empty-state">📸 התמונות יופיעו כאן ברגע שהמשתתפים יעלו אותן</div>';
+        return;
+      }
+      photos.sort((a, b) => (a[1].uploadedAt || 0) - (b[1].uploadedAt || 0));
+      collage.innerHTML = '';
+      photos.forEach(([uid, photo], i) => {
+        const div = document.createElement('div');
+        div.className = 'photo';
+        div.style.setProperty('--angle', angleFromKey(uid));
+        div.style.animationDelay = Math.min(i * 0.09, 1.8) + 's';
+        const name = photo.name || 'משתתפ/ת';
+        div.innerHTML = `
+          <img src="${escapeHtml(photo.data)}" alt="תמונה מאת ${escapeHtml(name)}" loading="lazy">
+          <div class="caption">${escapeHtml(name)}</div>
+        `;
+        collage.appendChild(div);
+      });
+    }
+
+    // Group allocation algorithm (3s and 4s only)
+    function computeGroupsPreview(n) {
+      if (n === 0) return { fours: 0, threes: 0, impossible: false };
+      if (n < 3 || n === 5) return { impossible: true };
+      // Try to maximize 4s
+      for (let fours = Math.floor(n / 4); fours >= 0; fours--) {
+        const rem = n - fours * 4;
+        if (rem === 0) return { fours, threes: 0, impossible: false };
+        if (rem % 3 === 0) return { fours, threes: rem / 3, impossible: false };
+      }
+      return { impossible: true };
+    }
+
+    function fisherYates(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    async function allocateGroups() {
+      if (!firebaseReady) return showToast('Firebase לא מחובר');
+      const snap = await db.ref('participants').once('value');
+      const all = snap.val() || {};
+      const unassigned = Object.entries(all).filter(([_, p]) => !p.group);
+      if (unassigned.length === 0) return showToast('אין משתתפים חדשים לחלק');
+
+      const plan = computeGroupsPreview(unassigned.length);
+      if (plan.impossible) return showToast(`אי אפשר לחלק ${unassigned.length} משתתפים לקבוצות של 3/4`);
+
+      const shuffled = fisherYates(unassigned);
+      const existingGroupCount = Object.keys(state.allGroups).length;
+      const updates = {};
+      let idx = 0, groupIdx = existingGroupCount;
+      const groupSizes = [];
+      for (let i = 0; i < plan.fours; i++) groupSizes.push(4);
+      for (let i = 0; i < plan.threes; i++) groupSizes.push(3);
+
+      for (const size of groupSizes) {
+        const groupId = String(groupIdx + 1); // "1", "2", "3", ...
+        const members = [];
+        for (let k = 0; k < size; k++) {
+          const [uid] = shuffled[idx++];
+          members.push(uid);
+          updates[`participants/${uid}/group`] = groupId;
+        }
+        updates[`groups/${groupId}`] = { members, size, createdAt: firebase.database.ServerValue.TIMESTAMP };
+        groupIdx++;
+      }
+
+      await db.ref().update(updates);
+      showToast(`נוצרו ${groupSizes.length} קבוצות`);
+    }
+
+    async function resetWorkshop() {
+      if (!firebaseReady) return;
+      if (!confirm('לאפס את הסדנה? זה ימחק את כל המשתתפים, הקבוצות והתמונות.')) return;
+      await Promise.all([
+        db.ref('participants').remove(),
+        db.ref('groups').remove(),
+        db.ref('photos').remove()
+      ]);
+      showToast('הסדנה אופסה');
+    }
+
+    // ===== Boot =====
+    (function boot() {
+      const firebaseOk = initFirebase();
+      if (firebaseOk) initServerTimeSync();
+
+      if (!firebaseOk) {
+        showToast('מצב תצוגה: Firebase לא מחובר. הוסף config ב-index.html.', 6000);
+      }
+
+      if (DEBUG) {
+        const banner = document.createElement('div');
+        banner.className = 'debug-banner';
+        banner.textContent = 'DEBUG';
+        document.body.appendChild(banner);
+      }
+
+      // Dashboard mode
+      if (isDashboardMode()) {
+        const view = getDashboardView();
+        if (view === 'display') {
+          document.body.classList.add('dashboard-display');
+        }
+        updateDashboardTitle();
+        showScreen('screen-dashboard');
+        if (firebaseOk) {
+          listenAllParticipants();
+          listenForSummary();
+        }
+        // Always wire control buttons — they're hidden by CSS in display mode but
+        // still functional after toggling back to control mode.
+        document.getElementById('btn-allocate').addEventListener('click', allocateGroups);
+        document.getElementById('btn-reset').addEventListener('click', resetWorkshop);
+        document.getElementById('btn-summarize').addEventListener('click', triggerSummarize);
+        setupViewToggle();
+        return;
+      }
+
+      // Participant mode
+      loadIdentity();
+
+      // Debug: jump to screen via ?screen=N
+      const debugScreen = new URLSearchParams(location.search).get('screen');
+      if (debugScreen) {
+        state.name = state.name || 'משתמש בדיקה';
+        showScreen('screen-' + debugScreen);
+        if (debugScreen === 'battery') updateBatteryVisual(50);
+        return;
+      }
+
+      // Check if we already have an identity
+      if (state.name && firebaseOk) {
+        // Returning user — check Firebase state
+        db.ref('participants/' + state.userId).once('value').then(snap => {
+          const data = snap.val();
+          if (!data) {
+            // User was reset — start fresh
+            showScreen('screen-welcome');
+            document.getElementById('name-input').value = state.name;
+            return;
+          }
+          state.group = data.group;
+          state.energy = data.energy || 50;
+          state.photoUrl = data.photoUrl;
+          const savedScreen = identityStorage.getItem('pp-screen');
+          if (data.group) {
+            // Already in a group
+            listenForGroup();
+            updateGroupHeader();
+            if (!savedScreen || savedScreen === 'screen-welcome' || savedScreen === 'screen-waiting') {
+              renderGroupMembers();
+              goToScreen('screen-group');
+            } else {
+              showScreen(savedScreen);
+              if (savedScreen === 'screen-group') renderGroupMembers();
+              if (savedScreen === 'screen-battery') updateBatteryVisual(state.energy);
+              if (savedScreen === 'screen-discussion') listenToGroupTimer();
+            }
+          } else {
+            // Not allocated yet
+            listenForGroup();
+            goToScreen('screen-waiting');
+          }
+        });
+      } else {
+        showScreen('screen-welcome');
+      }
+
+      // Init battery visual
+      updateBatteryVisual(50);
+    })();
+  </script>
+</body>
+</html>
