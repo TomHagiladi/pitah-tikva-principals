@@ -88,7 +88,11 @@ def generate_summary(feedback_text):
         contents=user_prompt,
         config=types.GenerateContentConfig(
             system_instruction=SYSTEM_PROMPT,
-            max_output_tokens=1024,
+            # 2.5-flash reserves "thinking" tokens from the max_output budget by default,
+            # which truncated prior outputs mid-sentence in Hebrew. Disable thinking and
+            # leave plenty of room for the visible paragraph.
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
+            max_output_tokens=2048,
             temperature=0.85,
         ),
     )
